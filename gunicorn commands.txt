@@ -1,0 +1,7 @@
+gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 300 --capture-output --log-level debug core.wsgi:application
+
+To see the processes is 
+ps ax|grep gunicorn 
+
+and to stop gunicorn_django is 
+pkill gunicorn
