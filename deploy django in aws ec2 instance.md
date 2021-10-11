@@ -47,7 +47,7 @@ sudo systemctl start nginx
 ```
 Still same problem! Check [Here](https://www.digitalocean.com/community/questions/nginx-not-starting-address-already-in-use-nginx-bind-to-0-0-0-0-80-failed "here")
 
-8 . `gunicorn --bind 0.0.0.0:8080 core.wsgi:application`
+8 . `gunicorn --bind 0.0.0.0:8000 core.wsgi:application`
 
 ### Creating supervisor, it will make sure your app is up-end running
 1 . 
@@ -87,7 +87,7 @@ sudo nano django.conf
 ```shell
 server{
     listen 8080;
-    server_name ec2-13-213-38-171.ap-southeast-1.compute.amazonaws.com;
+    server_name YourServerAddress;
 
     location / {
      include proxy_params;
@@ -127,19 +127,32 @@ alias /home/ubuntu/ProjectFolderName/staticfiles/;
 }
 ```
 
-###Reload the nginx
+### Reload the nginx
 2. `sudo systemctl reload nginx`
 
-##Media file serving
+## Media file serving
 > same as static file serving..Just add the media files location-
 
 ```shell
 location /Data/{
-alias /home/ubuntu/AmariBlog-Django/Data/;
+alias /home/ubuntu/ProjectFolderName/Data/;
 }
 ```
 
-##To reload supervisor
+## To reload supervisor
 1. `sudo supervisorctl reload`
 
 If it is too much difficult for you to understand this documentation you can follow [This tutorial](https://youtu.be/u0oEIqQV_-E)
+
+
+
+
+
+
+
+
+
+
+
+
+
