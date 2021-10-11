@@ -47,7 +47,7 @@ sudo systemctl start nginx
 ```
 Still same problem! Check [Here](https://www.digitalocean.com/community/questions/nginx-not-starting-address-already-in-use-nginx-bind-to-0-0-0-0-80-failed "here")
 
-8 . `gunicorn --bind 0.0.0.0:8000 core.wsgi:application`
+8 . `gunicorn --bind 0.0.0.0:8080 core.wsgi:application`
 
 ### Creating supervisor, it will make sure your app is up-end running
 1 . 
