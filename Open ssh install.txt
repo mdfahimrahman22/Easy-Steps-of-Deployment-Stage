@@ -1,0 +1,9 @@
+You must install openssh-server on Linux before this will work. 
+Get the internal IP address of Ubuntu and use that IP to setup port forwarding 
+on port 22 (SSH) section of your router. 
+Although if you don't intend to SSH from outside your network, 
+this is not required.
+
+Here's how to install openssh-server:
+
+sudo apt-get install openssh-server openssh-client

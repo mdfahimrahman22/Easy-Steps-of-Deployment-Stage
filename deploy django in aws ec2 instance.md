@@ -71,8 +71,46 @@ stdout_logfile=/var/log/gunicorn/gunicorn.out.log
 programs:gunicorn
 ```
 Make your changes and press CTRL+O and Enter to save then CTRL+X to exit
+###Create a Gunicorn systemd Service File
+-  Open and create systemd service file:
 
-  3 . 
+`$ sudo nano /etc/systemd/system/gunicorn.service`
+
+-  Write the following content to the file(Make sure you have put 'name_of_user' and 'myProject' according to actual username and project folder ):
+
+```shell
+[Unit]
+Description=gunicorn daemon
+After=network.target
+
+[Service]
+User=name_of_user    
+Group=name_of_user   
+WorkingDirectory=/home/name_of_user/myproject
+ExecStart=/home/name_of_user/myproject/virtualenv_directory/bin/gunicorn -- 
+access-logfile - --workers 3 --bind unix:/home/name_of_user/myproject/myproject.sock myproject.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
+
+-  Update changes:
+
+`$ sudo systemctl daemon-reload`
+
+-  Starting the service:
+
+`$ sudo systemctl start gunicorn`
+
+-  Enabling the service:
+
+`$ sudo systemctl enable gunicorn`
+
+-  Check the status of the process:
+
+`$ sudo systemctl status gunicorn`
+
+  3 . **Updating django.conf**
 ```shell
 sudo mkdir /var/log/gunicorn
 sudo supervisorctl reread
@@ -96,6 +134,21 @@ server{
 }
 }
 ```
+- **If you face this kind of error -**
+[![Error Log](https://drive.google.com/uc?export=view&id=16YhjGqHDdYUkPHJywLJ9vVi5SpVw3OIz "Error Log")](https://drive.google.com/uc?export=view&id=16YhjGqHDdYUkPHJywLJ9vVi5SpVw3OIz "Error Log")
+
+**Then update django.conf like this -**
+		
+		server{
+			listen 8080;
+			server_name YourServerAddress;
+
+			location / {
+			 proxy_set_header Host $host;
+			 proxy_pass http://unix:/home/ubuntu/ProjectFolderName/app.sock;
+			}
+		}
+		
 5 . 
 `sudo nano /etc/nginx/nginx.conf`
 
@@ -106,6 +159,10 @@ Or, Uncomment this -
 `server_names_hash_bucket_size 64;`
 And increase the size like this -
 `server_names_hash_bucket_size 164;`
+
+- By default file size upload limit is 1M. In order to  change it just add this extra line in the same http block -
+`client_max_body_size 100M;`
+Otherwise you will get '413 Request Entity Too Large' error. [Stackoverflow link](https://stackoverflow.com/questions/36994828/413-request-entity-too-large-nginx-django "Stackoverflow link") for this error fixing.
 
 7 . 
 ```shell
@@ -143,16 +200,3 @@ alias /home/ubuntu/ProjectFolderName/Data/;
 1. `sudo supervisorctl reload`
 
 If it is too much difficult for you to understand this documentation you can follow [This tutorial](https://youtu.be/u0oEIqQV_-E)
-
-
-
-
-
-
-
-
-
-
-
-
-

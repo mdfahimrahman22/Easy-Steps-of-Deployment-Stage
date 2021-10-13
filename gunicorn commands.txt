@@ -1,7 +1,11 @@
 gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 300 --capture-output --log-level debug core.wsgi:application
 
-To see the processes is 
+To see the processes is:
 ps ax|grep gunicorn 
 
-and to stop gunicorn_django is 
-pkill gunicorn
+If you update your Django application, you can restart the Gunicorn process to pick up the changes by typing:
+sudo systemctl restart gunicorn
+For more info:https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-16-04
+
+and to stop gunicorn_django is:
+sudo pkill gunicorn
