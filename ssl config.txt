@@ -1,0 +1,14 @@
+1.sudo apt-get install certbot
+
+2.sudo apt-get install python3-certbot-nginx
+
+3.sudo crontab -e
+and paste this line-
+0 12*** /usr/bin/certbot renew -quiet
+
+4.crontab -e
+and paste this line-
+0 12*** /usr/bin/certbot renew -quiet
+
+
+

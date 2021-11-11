@@ -1,0 +1,34 @@
+Use root user for docker commands:
+sudo su
+
+
+To see the logs:
+docker logs container_id --follow
+
+Get into docker image:
+docker exec -it container_name bash
+
+Network list:
+docker network ls
+
+Container list:
+docker container ls
+
+Volume list:
+docker volume ls
+
+Images list:
+docker images
+
+Remove container:
+docker stop <Container_ID>
+docker rm <Container_ID>
+
+Remove Image:
+docker rmi image_id
+
+Delete all volumes:
+docker volume prune
+
+To Restart docker:
+sudo service docker restart
