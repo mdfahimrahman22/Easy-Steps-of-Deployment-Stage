@@ -1,0 +1,9 @@
+1. Set the app from stack to container:
+	heroku stack:set container --app heroku_app_name
+2. Create heroku.yml file and add these lines(for more info goto-https://devcenter.heroku.com/articles/build-docker-images-heroku-yml):
+
+build:
+  docker:
+    web: Dockerfile
+
+3. 
