@@ -1,32 +1,35 @@
 ## Setting Up Postgre on remote server
-1 . `sudo apt install postgresql -y`
+* To install PostgreSQL, first refresh your server’s local package index: `sudo apt update`
 
-2 . `sudo su postgres`
+*  `sudo apt install postgresql postgresql-contrib -y`
 
-3 . `psql -U  postgres -c "CREATE ROLE ubuntu;"`
+*  `sudo systemctl start postgresql.service`
 
-4 . `psql -U  postgres -c "ALTER ROLE ubuntu WITH LOGIN;"`
+*  `sudo su postgres`
 
-5 .` psql -U  postgres -c "ALTER ROLE ubuntu CREATEDB;"`
+*  `psql -U  postgres -c "CREATE ROLE ubuntu;"`
 
-6 . `psql -U  postgres -c "ALTER ROLE ubuntu WITH PASSWORD '1234';"`
+*  `psql -U  postgres -c "ALTER ROLE ubuntu WITH LOGIN;"`
 
-7 . Then exit from psql by typing exit
+*  ` psql -U  postgres -c "ALTER ROLE ubuntu CREATEDB;"`
 
-8 . Finding postgresql.conf
-`sudo find / -name "postgresql.conf" `
+*  `psql -U  postgres -c "ALTER ROLE ubuntu WITH PASSWORD '1234';"`
 
-Or 
-	`locate "postgresql.conf"`
+*  Then exit from psql by typing `exit`
+
+*  Finding postgresql.conf `sudo find / -name "postgresql.conf" `
+Or 	`locate "postgresql.conf"`
 	
-9 . Then edit postgresql.conf
-`sudo nano /etc/postgresql/12/main/postgresql.conf`
+*  Then edit postgresql.conf `sudo nano /etc/postgresql/12/main/postgresql.conf`
 
-& add this line -
-> listen_addresses = '*' 
+	& add this line -
+	> listen_addresses = '*' 
 
-10 . locate pg_hba.conf & add these 2 lines at the bottom(Make sure you maintain the spaces/tab with the top level)-
+*  locate pg_hba.conf & add these 2 lines at the bottom(Make sure you maintain the spaces/tab with the top level)-
 > host	all		all         0.0.0.0/0		md5
-host	all		all		::/0		md5
+> host	all		all		::/0		md5
 
-11 . `sudo systemctl restart postgresql`
+*  `sudo systemctl restart postgresql`
+
+*  If firewall is enabled then make sure the port is allowed. To allow port 5432 ->
+`ufw allow 5438`
