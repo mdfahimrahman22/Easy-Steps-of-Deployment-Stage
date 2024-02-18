@@ -1,0 +1,68 @@
+name: Auto Run Task
+
+on: 
+  # push:
+  #   branches: [ main ]
+  schedule:
+  - cron: '*/5 * * * *'
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Send greeting
+      run: echo "Welcome ${{ github.actor }}"
+
+  pull_and_commit_submodule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+        # with:
+        #   submodules: recursive
+        #   token: ${{ secrets.RAFAT97_BOT_ACCESS_TOKEN }}
+
+
+      - name: List files 
+        run: ls -al
+
+      - name: Git version & config
+        run: |
+            echo "Git version"  
+            git --version
+            echo "Set config" 
+            git config --local user.email "rafathaque.bot@gmail.com"
+            git config --local user.name  "rafat97bot"
+            echo "Git config"  
+            git config --list
+
+      # - name: List files in the repository submodule
+      #   run: |
+      #       echo "---Start pulling---" 
+      #       git pull --recurse-submodules
+      #       git status
+      #       echo "---Start submodule update---" 
+      #       git submodule update --remote
+      #       git status
+      #       echo "---Start update added---" 
+      #       git add .
+      #       git status
+      #       echo "---Commit---" 
+      #       git commit -m "🤖 Update by ${{ github.actor }}"
+      #       echo "---Push---" 
+      #       git push 
+      #       echo "---Done Process---" 
+
+      - name: Clone Repo AiS_Packages
+        run: |
+            echo "---Start pulling---" 
+            rm -rfv AiS_Packages
+            git clone https://rafat97bot:${{ secrets.RAFAT97_BOT_ACCESS_TOKEN }}@github.com/pioneerAlpha/AiS_Packages
+            rm -rfv AiS_Packages/.git
+            mv -r AiS_Packages src
+            git status
+            git add .
+            git status
+            git commit -m "🤖 AiS_Packages repo Update by ${{ github.actor }}"
+            git push 
+

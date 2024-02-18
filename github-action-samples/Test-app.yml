@@ -1,0 +1,68 @@
+name: Basic Testing for CI
+
+on:
+  push:
+    branches: [ master, dev ]
+
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+
+  greet:
+    runs-on: self-hosted
+    steps:
+    - name: Send greeting
+      run: echo "Hello ${{ github.event.inputs.name }}"
+    
+
+  npm_build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: Install npm package
+      run: npm install
+    - name: Project Build
+      run: npm run build --if-present
+    - name: Done
+      run: |
+        echo "🎉 The  npm_build test job was automatically done"  
+    
+  yarn_build:
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
+    needs: [greet,npm_build]
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: Install yarn
+      run: npm install -g yarn
+    - name: Install project packages
+      run: yarn install --frozen-lockfile
+    - name: Build project
+      run: yarn build
+    - name: Done
+      run: |
+        echo "🎉 The  yarn_build test job was automatically done"
