@@ -1,0 +1,20 @@
+📦 Install:
+
+pip install django-dbbackup
+
+🔧 Add to INSTALLED_APPS:
+
+INSTALLED_APPS = [
+    ...
+    'dbbackup',
+]
+
+🔐 Set a backup directory in settings.py:
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': '/path/to/backups/'}
+
+📤 Run Backup:
+python manage.py dbbackup
+
+📥 Run Restore:
+python manage.py dbrestore

@@ -1,0 +1,25 @@
+name: Trigger Vercel Deploy (Hook)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # If you stored the secret under an Environment, uncomment:
+    # environment: production
+    env:
+      VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+      NEXT_PUBLIC_PRODUCTION_API_URL: ${{ secrets.NEXT_PUBLIC_PRODUCTION_API_URL }}
+    steps:
+      - name: Ensure secret is present
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK_URL" ]; then
+            echo "::error::VERCEL_DEPLOY_HOOK_URL is empty. Add it in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+
+      - name: Trigger Vercel Deploy Hook
+        run: curl -fsS -X POST "$VERCEL_DEPLOY_HOOK_URL"

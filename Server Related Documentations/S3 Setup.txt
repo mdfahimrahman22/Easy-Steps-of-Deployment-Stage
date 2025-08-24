@@ -1,0 +1,83 @@
+1. Edit bucket policy:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "PublicReadAccess",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::quicktestbd-backend-django-s3-bucket/*"
+        },
+        {
+            "Sid": "AllowIAMUserUpload",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::112108976279:user/quicktestbd-backend-django-s3-bucket-user"
+            },
+            "Action": [
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+            ],
+            "Resource": "arn:aws:s3:::quicktestbd-backend-django-s3-bucket/*"
+        }
+    ]
+}
+
+
+2. Set Cross-origin resource sharing (CORS):
+[
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "PUT",
+            "POST",
+            "DELETE"
+        ],
+        "AllowedOrigins": [
+            "quicktestbd-api.cloudpixel.dev",
+            "quicktestbd.cloudpixel.dev",
+            "quicktestbd-admin.cloudpixel.dev",
+            "quick-test-bd-admin-panel-htciq5qza-cloud-pixels-projects.vercel.app",
+            "quick-test-bd-student-panel-git-main-cloud-pixels-projects.vercel.app",
+            "localhost"
+        ],
+        "ExposeHeaders": []
+    },
+    {
+        "AllowedHeaders": [
+            "*"
+        ],
+        "AllowedMethods": [
+            "GET"
+        ],
+        "AllowedOrigins": [
+            "*"
+        ],
+        "ExposeHeaders": []
+    }
+]
+
+3. Create User Policy:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*"
+            ],
+            "Resource": [
+                "arn:aws:s3:::qztestbd-website-django-s3-bucket",
+                "arn:aws:s3:::qztestbd-website-django-s3-bucket/*"
+            ]
+        }
+    ]
+}
+
+
+4. Create User attaching the policy
+
+5. Create access key

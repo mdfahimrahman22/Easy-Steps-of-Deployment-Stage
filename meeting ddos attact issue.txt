@@ -1,0 +1,70 @@
+MD. Ariful Hasan
+10:29 PM
+https://api.edgecoursebd.com/api/home/landing-data/
+Shanjid Hasan
+10:31 PM
+awk '{print $1}' /var/log/nginx/access.log | sort | uniq -c | sort -nr | head -10
+tail -n 1000 /var/log/nginx/access.log | awk '{print $4}' | cut -d: -f2-4 | sort | uniq -c
+MD. Ariful Hasan
+10:32 PM
+130592 68.183.188.159
+Shanjid Hasan
+10:38 PM
+grep '68.183.188.159' /var/log/nginx/access.log | awk '{print $6, $7, $9}' | sort | uniq -c
+Shanjid Hasan
+10:43 PM
+sudo systemctl restart fail2ban
+sudo systemctl enable fail2ban
+sudo fail2ban-client status
+sudo tail -f /var/log/fail2ban.log
+MD. Ariful Hasan
+10:57 PM
+root@px-ec-backend:~# sudo fail2ban-client status
+Status
+|- Number of jail:      3
+`- Jail list:   nginx-botsearch, nginx-http-auth, sshd
+root@px-ec-backend:~# sudo tail -f /var/log/fail2ban.log
+2025-08-01 16:48:09,496 fail2ban.filter         [926]: INFO    Added logfile: '/var/log/nginx/access.log' (pos = 41509007, hash = ce1a3daea06d5c8b9f26e8bb80c509583ec4f686)
+2025-08-01 16:48:09,521 fail2ban.jail           [926]: INFO    Jail 'sshd' started
+2025-08-01 16:48:09,526 fail2ban.jail           [9
+Shanjid Hasan
+10:57 PM
+https://codeshare.io/5w43wB
+Shanjid Hasan
+10:59 PM
+sudo iptables -A INPUT -s 57.129.44.21 -j DROP
+Shanjid Hasan
+11:01 PM
+htop
+iftop -i eth0
+iotop
+Shanjid Hasan
+11:25 PM
+curl https://www.cloudflare.com/ips-v4 -o cloudflare_ips.txt
+Shanjid Hasan
+12:33 AM
+sudo tail -f /var/log/fail2ban.log
+MD. Ariful Hasan
+12:49 AM
+curl https://www.cloudflare.com/ips-v4
+curl https://www.cloudflare.com/ips-v6
+
+
+
+
+Samnan Rahee
+11:09 PM
+https://www.hcaptcha.com/
+Samnan Rahee
+11:18 PM
+Frontend security: https://arcjet.com/
+brb in a min
+Samnan Rahee
+11:19 PM
+back
+You
+11:20 PM
+For django connection pooling: https://pypi.org/project/django-db-geventpool/
+
+
+sudo tail -f /var/log/fail2ban.log

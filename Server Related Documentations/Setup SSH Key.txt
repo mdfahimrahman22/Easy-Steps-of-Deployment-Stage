@@ -1,0 +1,74 @@
+GIVE PERMISSION
+# 1) Point to your key
+$KEY = 'D:\Cloudpixel.dev\AWS\AWS_112108976279\lightsail\cp-django-projects-lightsail\cp-django-projects-lightsail-ssh-key.pem'
+
+# 2) Stop inheriting (so the folder’s permissive ACLs don’t flow in)
+icacls "$KEY" /inheritance:r
+
+# 3) Remove any “broad” principals OpenSSH dislikes
+icacls "$KEY" /remove "NT AUTHORITY\Authenticated Users" "Authenticated Users" "BUILTIN\Users" "Users" "Everyone"
+
+# 4) Grant ONLY you (read), plus SYSTEM/Administrators (full)
+icacls "$KEY" /grant:r "$env:USERDOMAIN\$env:USERNAME:R"
+icacls "$KEY" /grant:r "SYSTEM:F"
+icacls "$KEY" /grant:r "Administrators:F"
+
+# 5) (Optional but good) make yourself the owner
+icacls "$KEY" /setowner "$env:USERDOMAIN\$env:USERNAME"
+
+# 6) Verify
+icacls "$KEY"
+
+
+CONNECTION
+Now to connect:
+$KEY = 'D:\Cloudpixel.dev\DigitalOcean\edge-course-server\ssh_hulk_singapur\ssh_hulk_singapur.pem'
+
+cp-ec-backend-lightsail:
+ssh -i $KEY ubuntu@54.255.74.133
+
+cp-ec-backend-ec2:
+ssh -i $KEY ubuntu@13.250.233.133
+
+SETUP .SSH/CONFIG
+Add in config:
+Create C:\Users\<you>\.ssh\config (file may not exist; create it) and add:
+
+Host my-lightsail
+    HostName <PUBLIC_IP>
+    User ubuntu
+    IdentityFile C:\Users\<you>\.ssh\lightsail-<region>.pem
+
+
+Then connect with:
+ssh my-lightsail
+
+
+
+Add passphrase for the first time:
+1) Open PowerShell (Run as Administrator)
+2) Check if the service exists:
+Get-Service ssh-agent -ErrorAction SilentlyContinue
+
+*No output / not found? ? install OpenSSH Client (next step).
+*Found but Stopped/Disabled? ? skip to step 4.
+3) Install (or repair) OpenSSH Client:
+# See what’s installed
+Get-WindowsCapability -Online | ? Name -like 'OpenSSH*'
+
+# Install the client (includes ssh-agent)
+Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+
+4) Enable and start the agent:
+# Make it start automatically at boot (or use 'Manual' if you prefer)
+Set-Service ssh-agent -StartupType Automatic
+
+# Start it now
+Start-Service ssh-agent
+
+5) Add your key (only once per boot):
+ssh-add "D:\Cloudpixel.dev\DigitalOcean\cloudpixel-backend-server\id_rsa"
+ssh-add -l   # should list one identity
+
+6) Connect without typing the passphrase each time:
+ssh root@157.245.201.231
