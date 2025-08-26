@@ -1,0 +1,38 @@
+1. Generate SSH Key in windows terminal:
+ssh-keygen -t rsa -b 4096 -f W:\Github\AWS\AWS-Credentials\GCP\pa-backend-projects-server\pa_backend_projects_server_key -C "support@smartsohay.com"
+
+Note: You can skip passphrase, if given, store it safely
+2. Add SSH Key to GCP:
+gcloud auth login
+gcloud compute os-login ssh-keys add --key-file="W:\Github\AWS\AWS-Credentials\GCP\pa-backend-projects-server\pa_backend_projects_server_key.pub"
+gcloud compute os-login describe-profile
+
+3. Edit instance and add the SSH key from .pub file
+
+
+###Fix private key is being ignored issue:
+# 1) Move/copy the key into your profile's .ssh folder
+$KEY = 'W:\Github\AWS\AWS-Credentials\GCP\pa-backend-projects-server\pa_backend_projects_server_key'
+
+# 2) Stop inheriting (so the folder’s permissive ACLs don’t flow in)
+icacls "$KEY" /inheritance:r
+
+# 3) Remove any “broad” principals OpenSSH dislikes
+icacls "$KEY" /remove "NT AUTHORITY\Authenticated Users" "Authenticated Users" "BUILTIN\Users" "Users" "Everyone"
+
+# 4) Grant ONLY you (read), plus SYSTEM/Administrators (full)
+icacls "$KEY" /grant:r "$env:USERDOMAIN\$env:USERNAME:R"
+icacls "$KEY" /grant:r "SYSTEM:F"
+icacls "$KEY" /grant:r "Administrators:F"
+
+# 5) (Optional but good) make yourself the owner
+icacls "$KEY" /setowner "$env:USERDOMAIN\$env:USERNAME"
+
+# 6) Verify
+icacls "$KEY"
+
+
+4. Connect:
+$KEY = 'W:\Github\AWS\AWS-Credentials\GCP\pa-backend-projects-server\pa_backend_projects_server_key'
+ssh -i $KEY support@34.124.188.161
+
