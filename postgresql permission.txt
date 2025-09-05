@@ -1,2 +1,0 @@
-GRANT USAGE ON SCHEMA public TO cloudpixel_website_db_user;
-GRANT CREATE ON SCHEMA public TO cloudpixel_website_db_user;
