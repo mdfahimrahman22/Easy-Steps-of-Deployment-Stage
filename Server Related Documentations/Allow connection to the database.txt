@@ -1,0 +1,23 @@
+✅ 1.Allow connection to the database:
+GRANT CONNECT ON DATABASE protigga_backend_db TO protigga_backend_db_user;
+
+
+✅ 2.Make the user the owner (recommended & easiest):
+ALTER DATABASE protigga_backend_db OWNER TO protigga_backend_db_user;
+
+
+✅ 3.Give schema-level permissions (public schema):
+GRANT USAGE, CREATE ON SCHEMA public TO protigga_backend_db_user;
+
+✅ 4.Grant full access to existing tables & sequences:
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO protigga_backend_db_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO protigga_backend_db_user;
+
+✅ 5.Auto-grant privileges for future tables
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT ALL PRIVILEGES ON TABLES TO protigga_backend_db_user;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT ALL PRIVILEGES ON SEQUENCES TO protigga_backend_db_user;
+
+

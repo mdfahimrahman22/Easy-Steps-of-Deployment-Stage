@@ -1,0 +1,17 @@
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+
+
+SELECT 
+    calls,
+    total_exec_time,
+    mean_exec_time,
+    rows,
+    LEFT(query, 1000) AS sample_query
+FROM pg_stat_statements
+ORDER BY total_exec_time DESC
+LIMIT 20;
+
+
+
+to reset the record:
+SELECT pg_stat_statements_reset();
