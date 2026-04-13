@@ -22,7 +22,7 @@ ssh -i "W:\Github\AWS\AWS-Credentials\MicrosoftAzure\Bokbok-VM\bokbok-azure.pem"
 
 
 For GCP:
-set KEY=W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key
+set KEY=W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server-new\postgresql_db_server_new_key
 
 icacls "%KEY%" /inheritance:r
 icacls "%KEY%" /remove "Authenticated Users" "Users" "Everyone"
@@ -39,5 +39,5 @@ SYSTEM:(F)
 BUILTIN\Administrators:(F)
 
 
-ssh -i "W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key" support@136.110.24.228
+ssh -i "W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server-new\postgresql_db_server_new_key" comsupport@34.21.167.87
 

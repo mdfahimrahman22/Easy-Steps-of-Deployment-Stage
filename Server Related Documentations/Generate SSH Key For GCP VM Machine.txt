@@ -1,11 +1,11 @@
 1. Generate SSH Key in windows terminal:
-ssh-keygen -t rsa -b 4096 -f W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key -C "support@smartsohay.com"
+ssh-keygen -t rsa -b 4096 -f W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server-new\postgresql_db_server_new_key -C "comsupport@digitalmcq.com"
 
 Note: You can skip passphrase, if given, store it safely
 2. Add SSH Key to GCP:
 gcloud auth login
-gcloud compute os-login ssh-keys add --key-file="W:\Github\AWS\AWS-Credentials\GCP\pa-backend-projects-server\pa_backend_projects_server_key.pub"
-gcloud compute os-login describe-profile
+gcloud compute os-login ssh-keys add --key-file="W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server-new\postgresql_db_server_new_key.pub"
+3. gcloud compute os-login describe-profile
 
 3. Edit instance and add the SSH key from .pub file
 
@@ -34,5 +34,32 @@ icacls "$KEY"
 
 4. Connect:
 $KEY = 'W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key'
-ssh -i $KEY support@136.110.24.228
+ssh -i $KEY support_digitalmcq_com@136.110.24.228
+
+
+
+Step 1: Purge the old/broken keys:
+Having multiple keys with different formats is likely causing the handshake to fail. Let's delete the two old ones:
+
+PowerShell
+# Remove the messy "support:" key
+gcloud compute os-login ssh-keys remove --key-fingerprint e8cf46a9705e596bd42f855bc974ceaf2ce9594b3bf0638dd01724837a67ffdd
+
+# Remove the other old key
+gcloud compute os-login ssh-keys remove --key-fingerprint 9ec9d7f3dc08a745192e66fb42c74dd859ab3aac92fcfc57fd1826747ee5826c
+
+
+If it still says "Permission Denied"
+If this fails, there is only one tiny setting left that could be blocking you: The Instance Metadata flag.
+
+The VM itself needs to have OS Login "turned on." Run this command to make sure:
+
+Step 2: Ensure OS Login is actually ACTIVE on the VM:
+gcloud compute instances add-metadata postgresql-db-server --metadata enable-oslogin=TRUE
+
+Step 3: Check for "Login" Permissions:
+gcloud projects add-iam-policy-binding pa-servers-493214 --member="user:support@digitalmcq.com" --role="roles/compute.osAdminLogin"
+
+Connect:
+ssh -o IdentitiesOnly=yes -i "W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server-new\postgresql_db_server_new_key" support_digitalmcq_com@34.21.167.87
 

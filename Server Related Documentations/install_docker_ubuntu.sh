@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# install_docker.sh
+# install_docker_ubuntu.sh
 # Purpose: Clean conflicting packages, add Docker's official repo, and install Docker CE stack on Ubuntu.
-# Usage: chmod +x install_docker.sh && ./install_docker.sh
+# Usage: chmod +x install_docker_ubuntu.sh && ./install_docker_ubuntu.sh
 # Notes:
 # - Safe to re-run (idempotent-ish). Absent packages are ignored.
 # - After running, you may need to log out/in for the docker group to take effect.
