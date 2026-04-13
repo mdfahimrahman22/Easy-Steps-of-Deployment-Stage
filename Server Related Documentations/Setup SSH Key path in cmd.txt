@@ -1,0 +1,43 @@
+For Microsoft Azure:
+
+set KEY=W:\Github\AWS\AWS-Credentials\MicrosoftAzure\Bokbok-VM\bokbok-azure.pem
+
+icacls "%KEY%" /inheritance:r
+icacls "%KEY%" /remove "Authenticated Users" "Users" "Everyone"
+icacls "%KEY%" /grant:r fahim:R
+icacls "%KEY%" /grant:r SYSTEM:F
+icacls "%KEY%" /grant:r Administrators:F
+icacls "%KEY%" /setowner fahim
+
+
+icacls "%KEY%"
+Expected output:
+fahim:(R)
+SYSTEM:(F)
+BUILTIN\Administrators:(F)
+
+
+ssh -i "W:\Github\AWS\AWS-Credentials\MicrosoftAzure\Bokbok-VM\bokbok-azure.pem" ubuntu@172.208.69.46
+
+
+
+For GCP:
+set KEY=W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key
+
+icacls "%KEY%" /inheritance:r
+icacls "%KEY%" /remove "Authenticated Users" "Users" "Everyone"
+icacls "%KEY%" /grant:r fahim:R
+icacls "%KEY%" /grant:r SYSTEM:F
+icacls "%KEY%" /grant:r Administrators:F
+icacls "%KEY%" /setowner fahim
+
+
+icacls "%KEY%"
+Expected output:
+fahim:(R)
+SYSTEM:(F)
+BUILTIN\Administrators:(F)
+
+
+ssh -i "W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key" support@136.110.24.228
+

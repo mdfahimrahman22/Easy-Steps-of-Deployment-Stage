@@ -1,6 +1,7 @@
 GIVE PERMISSION
+*** Set security for pem file to allow all for system user ***
 # 1) Point to your key
-$KEY = 'D:\Cloudpixel.dev\AWS\AWS_112108976279\lightsail\cp-django-projects-lightsail\cp-django-projects-lightsail-ssh-key.pem'
+$KEY = 'D:\Cloudpixel.dev\AWS\AWS_112108976279\lightsail\redis-server-1\redis-server.pem'
 
 # 2) Stop inheriting (so the folder’s permissive ACLs don’t flow in)
 icacls "$KEY" /inheritance:r
@@ -9,7 +10,7 @@ icacls "$KEY" /inheritance:r
 icacls "$KEY" /remove "NT AUTHORITY\Authenticated Users" "Authenticated Users" "BUILTIN\Users" "Users" "Everyone"
 
 # 4) Grant ONLY you (read), plus SYSTEM/Administrators (full)
-icacls "$KEY" /grant:r "$env:USERDOMAIN\$env:USERNAME:R"
+icacls "$KEY" /grant:r "$($env:USERDOMAIN)\$($env:USERNAME):R"
 icacls "$KEY" /grant:r "SYSTEM:F"
 icacls "$KEY" /grant:r "Administrators:F"
 
@@ -25,7 +26,7 @@ Now to connect:
 $KEY = 'D:\Cloudpixel.dev\DigitalOcean\edge-course-server\ssh_hulk_singapur\ssh_hulk_singapur.pem'
 
 cp-ec-backend-lightsail:
-ssh -i $KEY ubuntu@54.255.74.133
+ssh -i $KEY ubuntu@47.128.176.137
 
 cp-ec-backend-ec2:
 ssh -i $KEY ubuntu@13.250.233.133

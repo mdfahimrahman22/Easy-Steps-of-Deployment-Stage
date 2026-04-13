@@ -1,5 +1,5 @@
 1. Generate SSH Key in windows terminal:
-ssh-keygen -t rsa -b 4096 -f W:\Github\AWS\AWS-Credentials\GCP\pa-backend-projects-server\pa_backend_projects_server_key -C "support@smartsohay.com"
+ssh-keygen -t rsa -b 4096 -f W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key -C "support@smartsohay.com"
 
 Note: You can skip passphrase, if given, store it safely
 2. Add SSH Key to GCP:
@@ -33,6 +33,6 @@ icacls "$KEY"
 
 
 4. Connect:
-$KEY = 'W:\Github\AWS\AWS-Credentials\GCP\pa-backend-projects-server\pa_backend_projects_server_key'
-ssh -i $KEY support@34.124.188.161
+$KEY = 'W:\Github\AWS\AWS-Credentials\GCP\postgresql-db-server\postgresql_db_server_key'
+ssh -i $KEY support@136.110.24.228
 
