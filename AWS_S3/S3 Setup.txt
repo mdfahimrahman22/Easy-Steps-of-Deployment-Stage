@@ -37,11 +37,11 @@
             "DELETE"
         ],
         "AllowedOrigins": [
-            "quicktestbd-api.cloudpixel.dev",
-            "quicktestbd.cloudpixel.dev",
-            "quicktestbd-admin.cloudpixel.dev",
-            "quick-test-bd-admin-panel-htciq5qza-cloud-pixels-projects.vercel.app",
-            "quick-test-bd-student-panel-git-main-cloud-pixels-projects.vercel.app",
+            "smartsohay.com",
+            "mwqhgsadn4z4-admin.smartsohay.com",
+            "trag1y4w-devapi.smartsohay.com",
+            "yunpodyw5-api.smartsohay.com",
+            "35.198.204.234",
             "localhost"
         ],
         "ExposeHeaders": []

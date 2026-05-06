@@ -1,0 +1,102 @@
+aws s3 cp s3://smart-sohay-s3-bucket/db_backups/smart_sohay_db_20260411_201501.dump D:\PioneerAlpha\AWS\AWS_S3_BACKUP\smart-sohay-s3-bucket
+
+D:\PioneerAlpha\AWS\AWS_S3_BACKUP\smart-sohay-s3-bucket\db_backups\smart_sohay_db_20260411_201501.dump
+
+1.
+aws s3 sync s3://smart-sohay-s3-bucket/ D:\PioneerAlpha\AWS\AWS_S3_BACKUP\smart-sohay-s3-bucket
+
+
+4.
+aws s3 sync s3://pa-affiliates-website-api-django-s3-bucket/ D:\PioneerAlpha\AWS\AWS_S3_BACKUP\pa-affiliates-website-api-django-s3-bucket
+
+5. 
+aws s3 sync s3://infinity-ai-s3-bucket/ D:\PioneerAlpha\AWS\AWS_S3_BACKUP\infinity-ai-s3-bucket
+
+
+7.
+aws s3 sync s3://digital-bot-bd-s3-bucket/ D:\PioneerAlpha\AWS\AWS_S3_BACKUP\digital-bot-bd-s3-bucket
+
+aws s3 sync s3://infinity-ai-s3-bucket/ D:\PioneerAlpha\AWS\AWS_S3_BACKUP\infinity-ai-s3-bucket
+
+
+
+
+
+From 1 S3 bucket to another S3 bucket(src: https://gemini.google.com/share/f5ddc10ed10c):
+Step 1: Add a Bucket Policy to the Source Bucket (Account A)
+You need to tell the Source bucket to allow the Destination account to read its contents.
+
+Log into the AWS Management Console for Account A (the Source).
+
+Go to S3 > Click your Source Bucket > Permissions tab.
+
+Scroll down to Bucket policy and click Edit.
+
+Paste the following JSON policy. Be sure to replace DESTINATION_ACCOUNT_ID and SOURCE_BUCKET_NAME with your actual values.
+
+JSON
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCrossAccountRead",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::DESTINATION_ACCOUNT_ID:root"
+            },
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::SOURCE_BUCKET_NAME",
+                "arn:aws:s3:::SOURCE_BUCKET_NAME/*"
+            ]
+        }
+    ]
+}
+
+example:
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowCrossAccountRead",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::574731196232:root"
+            },
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::SOURCE_BUCKET_NAME",
+                "arn:aws:s3:::SOURCE_BUCKET_NAME/*"
+            ]
+        }
+    ]
+}
+
+Note: Using :root delegates the permission to the destination account's IAM administrators, allowing them to grant access to specific IAM users or roles within their account.
+
+Step 2: Run the Sync Command from the Destination Account (Account B)
+Now, you will pull the data into the new bucket.
+
+Open your terminal or command prompt.
+
+Ensure your AWS CLI is configured with credentials (Access Key / Secret Key) for an IAM User or Role in Account B (the Destination). This user must have permissions to write to the destination bucket.
+
+Run the following command:
+
+Bash
+aws s3 sync s3://SOURCE_BUCKET_NAME s3://DESTINATION_BUCKET_NAME --acl bucket-owner-full-control
+
+ex. aws s3 sync s3://smart-sohay-s3-bucket s3://smart-sohay-s3-bucket-574731196232 --acl bucket-owner-full-control
+
+Helpful Flags to Speed Up the Transfer:
+If you have a massive amount of data, you can optimize the CLI command:
+
+--quiet: Suppresses the output of the sync. Terminal output actually slows down the transfer significantly for buckets with millions of objects.
+
+--copy-props none: Skips copying object tags and metadata, which reduces API calls and speeds up the transfer if you only need the raw files. 
