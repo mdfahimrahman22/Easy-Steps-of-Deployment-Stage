@@ -231,7 +231,7 @@ def run_sync_command(source_bucket, dest_bucket, dest_access_key, dest_secret_ke
         "aws", "s3", "sync",
         f"s3://{source_bucket}",
         f"s3://{dest_bucket}",
-        "--quiet",
+        "--acl", "bucket-owner-full-control",
         "--copy-props", "none"
     ]
     
