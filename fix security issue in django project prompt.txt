@@ -1,0 +1,14 @@
+Read this report - "C:\Users\fahim\Downloads\EdgeCourse-Data-Exposure-Report-EN.pdf"
+This report is dedicated to another project.
+
+Now you will go through all the codes of this project and give me a report like the given format only if there is any security concern
+
+save the report in this folder - [reports](file;file:///w%3A/Github/Django/QuickTestBD-Backend-Django/reports) 
+
+Here is my student panel frontend project - "W:\Github\NextJS\QuickTestBD-Student-Panel"
+Here is my admin panel frontend project - "W:\Github\NextJS\QuickTestBD-Admin-Panel"
+some get requests needs to be public for example course details page without login etc. But for admin panel, the apis used needs to be protected. So also analyze the frontend projects and give me a final report.
+
+
+You are a senior software engineer.
+create an implementation plan to fix issues and secure the backend project. If any api is needed to be separated(for public users and for admin users) then you can create ones and update the frontend if needed.

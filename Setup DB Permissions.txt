@@ -1,0 +1,47 @@
+Step 1: Grant Permissions via pgAdmin (or SQL)
+Open the Query Tool in pgAdmin for your specific database (aura_api_monetizer_backend_db) and run the following commands.
+
+Note: Replace aura_api_monetizer_backend_db and aura_api_monetizer_backend_db_user with your actual database and user names if they differ slightly.
+
+SQL
+-- 1. Ensure the user can connect to the database
+GRANT CONNECT ON DATABASE aura_api_monetizer_backend_db TO aura_api_monetizer_backend_db_user;
+
+-- 2. Connect to your database first, then grant schema permissions
+GRANT USAGE, CREATE ON SCHEMA public TO aura_api_monetizer_backend_db_user;
+
+-- 3. Grant permissions for tables Django will create
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO aura_api_monetizer_backend_db_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO aura_api_monetizer_backend_db_user;
+
+-- 4. Ensure future tables created by migrations also grant permissions automatically
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO aura_api_monetizer_backend_db_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO aura_api_monetizer_backend_db_user;
+
+
+Why step 4 is crucial:
+Django constantly creates, modifies, and deletes tables when you run migrations. If you don't alter the default privileges, your user might lose access to newly created tables down the line.
+
+Step 2: Double-Check Your Django settings.py
+Since the error specifically mentions password authentication failed, make absolutely sure your DATABASES setting matches the password you set in pgAdmin exactly.
+
+Python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'aura_api_monetizer_backend_db', # Your DB Name
+        'USER': 'aura_api_monetizer_backend_db_user',
+        'PASSWORD': 'your_exact_password_here', # Check for typos/special characters
+        'HOST': '54.251.50.223',
+        'PORT': '5432',
+    }
+}
+Tip: If your password contains special characters (like @, #, $), ensure it is wrapped carefully in strings or environment variables so Python doesn't misinterpret them.
+
+Step 3: Test the Connection
+Once you've run the SQL commands and verified your settings, try running the migration commands again:
+
+Bash
+py manage.py makemigrations
+py manage.py migrate
+If the permissions are correct, migrate should successfully build Django's internal auth and admin tables without throwing the runtime warning.
