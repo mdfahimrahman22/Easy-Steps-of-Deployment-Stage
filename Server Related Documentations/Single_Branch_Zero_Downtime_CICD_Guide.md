@@ -224,3 +224,18 @@ git push origin main
 3. Click **Run workflow** ▾.
 4. Select `Branch: main` and choose `hard_restart: false` (or `true` if you need a full clean restart).
 5. Click the green **Run workflow** button.
+
+---
+
+## 7. How to Skip Deployment on Git Push (`[skip ci]`)
+
+If you want to push commits (e.g. updating documentation, readme, comments) to `main` without triggering an automatic server restart or deployment:
+
+Add **`[skip ci]`** or **`[ci skip]`** into the commit message:
+
+```bash
+git add .
+git commit -m "docs: update documentation [skip ci]"
+git push origin main
+```
+GitHub Actions will automatically detect this tag and skip the entire deployment job.

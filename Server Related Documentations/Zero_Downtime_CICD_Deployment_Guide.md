@@ -334,6 +334,33 @@ If saving returns `Internal Error`, it indicates an Nginx syntax or SSL certific
 
 ---
 
+## Part 6: How to Skip Deployment on Git Push (`[skip ci]`)
+
+Sometimes you may want to push changes to GitHub (e.g. updating documentation, READMEs, helper scripts, or minor comments) **without triggering an automatic server deployment or Docker rebuild**.
+
+GitHub Actions supports built-in commit message keywords to automatically cancel/skip execution.
+
+### How to use:
+Simply include **`[skip ci]`** or **`[ci skip]`** anywhere in your commit message:
+
+```bash
+git add .
+git commit -m "docs: update deployment documentation [skip ci]"
+git push origin dev
+```
+
+### Supported Keywords:
+Any of the following tags will completely bypass the deployment workflow:
+* `[skip ci]`
+* `[ci skip]`
+* `[skip actions]`
+* `[actions skip]`
+
+> [!TIP]
+> When `[skip ci]` is present, GitHub will show a small neutral/skipped icon next to the commit and will **not execute** any runner jobs on the server.
+
+---
+
 ## Summary Checklist for New Projects
 
 - [ ] Install runner in `~/actions-runner` on server.
