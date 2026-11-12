@@ -73,6 +73,28 @@ sudo ./svc.sh start
    * **`self-hosted`** (default)
    * A custom label matching your host role (e.g., `production`, `main`, or keep `self-hosted`).
 
+### Server Git SSH Access (Deploy Key Setup)
+To ensure the deployment script can run `git pull origin main` without hitting `Permission denied (publickey)`:
+
+1. **Check/Generate SSH Key on Server:**
+   ```bash
+   cat ~/.ssh/id_ed25519.pub 2>/dev/null || cat ~/.ssh/id_rsa.pub 2>/dev/null
+   ```
+   If empty, generate one:
+   ```bash
+   ssh-keygen -t ed25519 -C "server-deploy-key" -N "" -f ~/.ssh/id_ed25519
+   cat ~/.ssh/id_ed25519.pub
+   ```
+2. **Add Deploy Key on GitHub:**
+   * Go to repository `Settings` > `Deploy keys` > `Add deploy key`.
+   * Title: `production-server`.
+   * Paste key, leave write access unchecked, and save.
+3. **Switch Remote to SSH:**
+   ```bash
+   git remote set-url origin git@github.com:<your-org-or-user>/<repo-name>.git
+   git pull origin main
+   ```
+
 ---
 
 ## 3. GitHub Actions Workflow (`.github/workflows/deploy.yml`)
@@ -168,16 +190,12 @@ else
     echo "⚡ [Zero-Downtime] Pre-building Docker images in background while traffic is served..."
     docker compose -f "$COMPOSE_FILE" build
 
-    # 3. Database migrations (Optional - e.g., Prisma / Django / Knex)
+    # 3. Database migrations using the newly built image (Optional - e.g., Prisma / Django / Knex)
     echo "🗄️ Checking and running database migrations..."
-    if docker compose -f "$COMPOSE_FILE" ps -q "$API_SERVICE" | grep -q .; then
-        # Example for Prisma / Node:
-        docker compose -f "$COMPOSE_FILE" exec -T "$API_SERVICE" pnpm --filter @sohay/db run migrate:deploy || true
-        # Example for Django:
-        # docker compose -f "$COMPOSE_FILE" exec -T "$API_SERVICE" python manage.py migrate --noinput || true
-    fi
+    # Run migration in a temporary one-off container using the newly built image without taking down traffic
+    docker compose -f "$COMPOSE_FILE" run --rm --no-deps "$API_SERVICE" pnpm --filter @sohay/db run migrate:deploy || true
 
-    # 4. Instant container replacement
+    # 4. Instant container replacement (< 1s switch with zero downtime)
     echo "🚀 Performing seamless container recreation (< 2s switch)..."
     docker compose -f "$COMPOSE_FILE" up -d --no-deps "$API_SERVICE"
     docker compose -f "$COMPOSE_FILE" up -d

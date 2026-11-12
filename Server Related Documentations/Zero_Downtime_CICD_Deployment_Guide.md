@@ -114,6 +114,35 @@ If registered under an Organization:
 1. Go to `Organization Settings` > `Actions` > `Runner groups` > Click `Default`.
 2. Under **Repository access**, ensure `All repositories` is selected (or specifically add your project repository).
 
+### Step 5: Server Git SSH Access (Deploy Key Setup)
+
+When the deployment script runs `git pull origin <branch>`, the server itself needs persistent permission to pull from your private GitHub repository without asking for passwords.
+
+#### 1. Check or Generate SSH Key on Server:
+```bash
+cat ~/.ssh/id_ed25519.pub 2>/dev/null || cat ~/.ssh/id_rsa.pub 2>/dev/null
+```
+If empty, generate a new key (press `Enter` for all defaults):
+```bash
+ssh-keygen -t ed25519 -C "server-deploy-key" -N "" -f ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
+```
+Copy the entire printed output (`ssh-ed25519 AAA...`).
+
+#### 2. Add as Deploy Key on GitHub:
+* Go to your repository on GitHub: `Settings` > `Deploy keys` > Click **Add deploy key**.
+* **Title:** e.g., `prod-server` or `dev-server`.
+* **Key:** Paste the copied public key.
+* Leave **Allow write access** unchecked (read/pull access is enough).
+* Click **Add key**.
+
+#### 3. Ensure Git uses SSH in Project Folder:
+```bash
+git remote set-url origin git@github.com:<your-org-or-user>/<repo-name>.git
+git pull origin <branch>
+```
+*(Accept the host fingerprint prompt by typing `yes` when connecting for the first time)*
+
 ---
 
 ## Part 2: GitHub Actions Workflow Configuration
@@ -186,6 +215,14 @@ To achieve **Zero Downtime**:
 2. Run database migrations before swapping containers.
 3. Use `docker compose up -d` to swap the running containers instantly (takes < 2 seconds).
 
+### Critical Architecture Rule for True Zero Downtime
+> [!IMPORTANT]
+> **Never put `python manage.py migrate` in `docker-compose.yml`'s `command`!**
+> If migrations are in the main container command, Uvicorn won't bind to port 8096/8097 until all app migrations finish (taking 10–15 seconds of downtime).
+> Instead:
+> 1. In `docker-compose.yml`: Set `command` directly to Uvicorn (`uvicorn core.asgi:application ...`) so new containers start taking traffic in **< 1 second**.
+> 2. In `restart.sh`: Run database migrations using the newly built image (`docker compose run --rm --no-deps backend python manage.py migrate --noinput`) **before** replacing the running container.
+
 ### `dev_restart.sh`
 ```bash
 #!/bin/bash
@@ -198,7 +235,9 @@ set -e
 echo "📁 Current directory: $(pwd)"
 
 COMPOSE_FILE="docker-compose.dev.yml"
+ENV_FILE=".env.dev"
 BACKEND_SERVICE="smartsohay_backend_dev"
+DOCKER_CMD="docker compose --env-file $ENV_FILE -f $COMPOSE_FILE"
 
 echo "🔄 Resetting Git to head..."
 git reset --hard
@@ -208,23 +247,19 @@ git pull origin dev
 
 if [ ! -z "$1" ] && [ "$1" = "--down" ]; then
     echo "🛑 [Hard Restart] Stopping and removing containers & volumes..."
-    docker compose -f "$COMPOSE_FILE" down --volumes
+    $DOCKER_CMD down --volumes
     docker system prune -a -f
-    docker compose -f "$COMPOSE_FILE" up -d --build
+    $DOCKER_CMD up -d --build
 else
     echo "⚡ [Zero-Downtime] Pre-building Docker images in background..."
-    docker compose -f "$COMPOSE_FILE" build
+    $DOCKER_CMD build
 
-    echo "📦 Running database migrations..."
-    if docker compose -f "$COMPOSE_FILE" ps -q "$BACKEND_SERVICE" | grep -q .; then
-        docker compose -f "$COMPOSE_FILE" exec -T "$BACKEND_SERVICE" python manage.py migrate --noinput
-    else
-        docker compose -f "$COMPOSE_FILE" run --rm --no-deps "$BACKEND_SERVICE" python manage.py migrate --noinput
-    fi
+    echo "📦 Running database migrations using newly built image..."
+    $DOCKER_CMD run --rm --no-deps "$BACKEND_SERVICE" python manage.py migrate --noinput
 
     echo "🚀 Performing seamless container recreation..."
-    docker compose -f "$COMPOSE_FILE" up -d --no-deps "$BACKEND_SERVICE"
-    docker compose -f "$COMPOSE_FILE" up -d
+    $DOCKER_CMD up -d --no-deps "$BACKEND_SERVICE"
+    $DOCKER_CMD up -d
 fi
 
 echo "✅ Dev restart complete."
@@ -242,7 +277,9 @@ set -e
 echo "📁 Current directory: $(pwd)"
 
 COMPOSE_FILE="docker-compose.prod.yml"
+ENV_FILE=".env.prod"
 BACKEND_SERVICE="smartsohay_backend_prod"
+DOCKER_CMD="docker compose --env-file $ENV_FILE -f $COMPOSE_FILE"
 
 echo "🔄 Resetting Git to head..."
 git reset --hard
@@ -252,23 +289,19 @@ git pull origin prod
 
 if [ ! -z "$1" ] && [ "$1" = "--down" ]; then
     echo "🛑 [Hard Restart] Stopping and removing containers & volumes..."
-    docker compose -f "$COMPOSE_FILE" down --volumes
+    $DOCKER_CMD down --volumes
     docker system prune -a -f
-    docker compose -f "$COMPOSE_FILE" up -d --build
+    $DOCKER_CMD up -d --build
 else
     echo "⚡ [Zero-Downtime] Pre-building Docker images in background..."
-    docker compose -f "$COMPOSE_FILE" build
+    $DOCKER_CMD build
 
-    echo "📦 Running database migrations..."
-    if docker compose -f "$COMPOSE_FILE" ps -q "$BACKEND_SERVICE" | grep -q .; then
-        docker compose -f "$COMPOSE_FILE" exec -T "$BACKEND_SERVICE" python manage.py migrate --noinput
-    else
-        docker compose -f "$COMPOSE_FILE" run --rm --no-deps "$BACKEND_SERVICE" python manage.py migrate --noinput
-    fi
+    echo "📦 Running database migrations using newly built image..."
+    $DOCKER_CMD run --rm --no-deps "$BACKEND_SERVICE" python manage.py migrate --noinput
 
     echo "🚀 Performing seamless container recreation..."
-    docker compose -f "$COMPOSE_FILE" up -d --no-deps "$BACKEND_SERVICE"
-    docker compose -f "$COMPOSE_FILE" up -d
+    $DOCKER_CMD up -d --no-deps "$BACKEND_SERVICE"
+    $DOCKER_CMD up -d
 fi
 
 echo "✅ Production restart complete."
