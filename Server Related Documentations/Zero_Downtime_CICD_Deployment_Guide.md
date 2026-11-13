@@ -136,12 +136,19 @@ Copy the entire printed output (`ssh-ed25519 AAA...`).
 * Leave **Allow write access** unchecked (read/pull access is enough).
 * Click **Add key**.
 
-#### 3. Ensure Git uses SSH in Project Folder:
+#### 3. Switch Server Project from HTTPS to SSH (MANDATORY):
+> [!CAUTION]
+> **Why `remote: Repository not found` happens during CI/CD:**
+> If the server project repository was originally cloned via HTTPS (`https://github.com/...`), `git pull` will fail as soon as personal access tokens expire or fail to authenticate, causing the runner to skip pulling new code.
+> **You MUST switch each project on the server to SSH:**
 ```bash
+cd /path/to/your/project
 git remote set-url origin git@github.com:<your-org-or-user>/<repo-name>.git
+
+# Test the SSH connection (accept host fingerprint with 'yes' if prompted)
+ssh -T git@github.com
 git pull origin <branch>
 ```
-*(Accept the host fingerprint prompt by typing `yes` when connecting for the first time)*
 
 ---
 
@@ -254,11 +261,16 @@ else
     echo "⚡ [Zero-Downtime] Pre-building Docker images in background..."
     $DOCKER_CMD build
 
+    echo "🔍 [CI Step] Running Django system verification checks on newly built image..."
+    $DOCKER_CMD run --rm --no-deps "$BACKEND_SERVICE" python manage.py check
+
     echo "📦 Running database migrations using newly built image..."
     $DOCKER_CMD run --rm --no-deps "$BACKEND_SERVICE" python manage.py migrate --noinput
 
-    echo "🚀 Performing seamless container recreation..."
-    $DOCKER_CMD up -d --no-deps "$BACKEND_SERVICE"
+    echo "🚀 Performing seamless container recreation (< 1s switch with --force-recreate)..."
+    $DOCKER_CMD up -d --no-deps --force-recreate "$BACKEND_SERVICE"
+    $DOCKER_CMD up -d --no-deps --force-recreate smartsohay_backend_dev_celery_worker
+    $DOCKER_CMD up -d --no-deps --force-recreate smartsohay_backend_dev_celery_beat
     $DOCKER_CMD up -d
 fi
 
@@ -296,11 +308,16 @@ else
     echo "⚡ [Zero-Downtime] Pre-building Docker images in background..."
     $DOCKER_CMD build
 
+    echo "🔍 [CI Step] Running Django system verification checks on newly built image..."
+    $DOCKER_CMD run --rm --no-deps "$BACKEND_SERVICE" python manage.py check
+
     echo "📦 Running database migrations using newly built image..."
     $DOCKER_CMD run --rm --no-deps "$BACKEND_SERVICE" python manage.py migrate --noinput
 
-    echo "🚀 Performing seamless container recreation..."
-    $DOCKER_CMD up -d --no-deps "$BACKEND_SERVICE"
+    echo "🚀 Performing seamless container recreation (< 1s switch with --force-recreate)..."
+    $DOCKER_CMD up -d --no-deps --force-recreate "$BACKEND_SERVICE"
+    $DOCKER_CMD up -d --no-deps --force-recreate smartsohay_backend_dev_celery_worker
+    $DOCKER_CMD up -d --no-deps --force-recreate smartsohay_backend_dev_celery_beat
     $DOCKER_CMD up -d
 fi
 
